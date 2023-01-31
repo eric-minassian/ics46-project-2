@@ -1,123 +1,360 @@
+#include "SkipList.hpp"
 #include "gtest/gtest.h"
 #include <vector>
-#include "SkipList.hpp"
-
 
 /*
 NOTE:  these are not intended as exhaustive tests.
-	 You should make your own additional tests
-	 VERY IMPORTANT:  if your SkipList is not templated, or if 
-			it is not built as a linked structure, your score for this project
-			will be zero.  Be sure your SkipList compiles and runs 
-	 		with non-numeric data types. 
+         You should make your own additional tests
+         VERY IMPORTANT:  if your SkipList is not templated, or if
+                        it is not built as a linked structure, your score for
+this project will be zero.  Be sure your SkipList compiles and runs with
+non-numeric data types.
 
 
-NOTE ALSO:  "Not Required" does not mean "optional" or "extra credit."  
-"Not required" only means that we will still grade your project, even 
-if these exact tests do not pass.  
+NOTE ALSO:  "Not Required" does not mean "optional" or "extra credit."
+"Not required" only means that we will still grade your project, even
+if these exact tests do not pass.
 */
 
-namespace{
+namespace {
 
-
-
-
-
-	TEST(SampleTests, SimpleHeightsTest)
-	{
-		SkipList<unsigned, unsigned> sl;
-		std::vector<unsigned> heights;
-		for(unsigned i=0; i < 10; i++)
-		{
-			sl.insert(i,i);
-			heights.push_back( sl.height(i) );
-		}
-		std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1, 2};
-		EXPECT_TRUE( heights == expectedHeights );
-	}
-
-	TEST(SampleTests, SimpleFindTest)
-	{
-		SkipList<unsigned, unsigned> sl;
-		for(unsigned i=0; i < 10; i++)
-		{
-			sl.insert(i, (100 + i) );
-		}
-		for(unsigned i=0; i < 10; i++)
-		{
-			EXPECT_TRUE((i+100) == sl.find(i));
-		}
-	}
-
-	TEST(SampleTests, SimpleLargestAndSmallest)
-	{
-		SkipList<unsigned, unsigned> sl;
-		for(unsigned i=0; i < 10; i++)
-		{
-			sl.insert(i, (100 + i) );
-		}
-		EXPECT_TRUE( sl.isSmallestKey( 0 ) and sl.isLargestKey( 9 ) );
-
-	}
-
-	TEST(SampleTests, InvolvedHeightsTest)
-	{
-		SkipList<unsigned, unsigned> sl;
-		std::vector<unsigned> heights;
-		for (unsigned i = 0; i < 10; i++)
-		{
-			sl.insert(i, i);
-			heights.push_back(sl.height(i));
-		}
-
-		// The coinFlip function will always return heads
-		// for 255 regardless of the current layer.
-		// You can use this value to test your threshold for halting
-		// the insertion procedure. If this results in an infinite loop inside
-		// of your insert function you have not implemented a cutoff threshold.
-		unsigned const MAGIC_VAL = 255;
-		sl.insert(MAGIC_VAL, MAGIC_VAL);
-
-		heights.push_back(sl.height(MAGIC_VAL));
-
-		// The expected height for 255 is 12 because there are fewer than 16 nodes in
-		// the skip list when 12 is added.
-		std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 12};
-		EXPECT_TRUE(heights == expectedHeights);
-
-		// At this point there should be 13 layers
-		// (because the fast lane is not included in the height calculation).
-		EXPECT_TRUE(sl.numLayers() == 13);
-	}
-
-	TEST(SampleTests, Capacity17Test)
-	{
-		SkipList<unsigned, unsigned> sl;
-		std::vector<unsigned> heights;
-
-		// First insert 16 values into the skip list [0, 15].
-		for (unsigned i = 0; i < 16; i++)
-		{
-			sl.insert(i, i);
-			heights.push_back(sl.height(i));
-		}
-
-		// Same value used in SimpleHeightsTest for testing the threshold.
-		unsigned const MAGIC_VAL = 255;
-		sl.insert(MAGIC_VAL, MAGIC_VAL);
-
-		heights.push_back(sl.height(MAGIC_VAL));
-
-		// The expected height for 255 is 15 because 3 * ceil(log_2(17)) = 15
-		// meaning the maximum height of any node should be 15 for a skip list with 17 nodes.
-		std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1, 5, 15};
-		EXPECT_TRUE(heights == expectedHeights);
-
-		// At this point there should be 16 layers
-		// (because the fast lane is not included in the height calculation).
-		EXPECT_TRUE(sl.numLayers() == 16);
-	}
-
-
-
+TEST(SampleTests, SimpleHeightsTest) {
+  SkipList<unsigned, unsigned> sl;
+  std::vector<unsigned> heights;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, i);
+    heights.push_back(sl.height(i));
+  }
+  std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1, 2};
+  EXPECT_TRUE(heights == expectedHeights);
 }
+
+TEST(SampleTests, SimpleFindTest) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, (100 + i));
+  }
+  for (unsigned i = 0; i < 10; i++) {
+    EXPECT_TRUE((i + 100) == sl.find(i));
+  }
+}
+
+TEST(SampleTests, SimpleLargestAndSmallest) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, (100 + i));
+  }
+  EXPECT_TRUE(sl.isSmallestKey(0) and sl.isLargestKey(9));
+}
+
+TEST(SampleTests, InvolvedHeightsTest) {
+  SkipList<unsigned, unsigned> sl;
+  std::vector<unsigned> heights;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, i);
+    heights.push_back(sl.height(i));
+  }
+
+  // The coinFlip function will always return heads
+  // for 255 regardless of the current layer.
+  // You can use this value to test your threshold for halting
+  // the insertion procedure. If this results in an infinite loop inside
+  // of your insert function you have not implemented a cutoff threshold.
+  unsigned const MAGIC_VAL = 255;
+  sl.insert(MAGIC_VAL, MAGIC_VAL);
+
+  heights.push_back(sl.height(MAGIC_VAL));
+
+  // The expected height for 255 is 12 because there are fewer than 16 nodes in
+  // the skip list when 12 is added.
+  std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 12};
+  EXPECT_TRUE(heights == expectedHeights);
+
+  // At this point there should be 13 layers
+  // (because the fast lane is not included in the height calculation).
+  EXPECT_TRUE(sl.numLayers() == 13);
+}
+
+TEST(SampleTests, Capacity17Test) {
+  SkipList<unsigned, unsigned> sl;
+  std::vector<unsigned> heights;
+
+  // First insert 16 values into the skip list [0, 15].
+  for (unsigned i = 0; i < 16; i++) {
+    sl.insert(i, i);
+    heights.push_back(sl.height(i));
+  }
+
+  // Same value used in SimpleHeightsTest for testing the threshold.
+  unsigned const MAGIC_VAL = 255;
+  sl.insert(MAGIC_VAL, MAGIC_VAL);
+
+  heights.push_back(sl.height(MAGIC_VAL));
+
+  // The expected height for 255 is 15 because 3 * ceil(log_2(17)) = 15
+  // meaning the maximum height of any node should be 15 for a skip list with 17
+  // nodes.
+  std::vector<unsigned> expectedHeights = {1, 2, 1, 3, 1, 2, 1, 4, 1,
+                                           2, 1, 3, 1, 2, 1, 5, 15};
+  EXPECT_TRUE(heights == expectedHeights);
+
+  // At this point there should be 16 layers
+  // (because the fast lane is not included in the height calculation).
+  EXPECT_TRUE(sl.numLayers() == 16);
+}
+
+TEST(Additional, Test1) {
+  SkipList<std::string, std::string> sl;
+  EXPECT_TRUE(sl.insert("A", "alligator"));
+  EXPECT_TRUE(sl.insert("B", "bear"));
+  EXPECT_TRUE(sl.insert("C", "cat"));
+  EXPECT_TRUE(sl.insert("D", "dog"));
+  EXPECT_TRUE(sl.insert("E", "elephant"));
+  EXPECT_TRUE(sl.insert("F", "fox"));
+  EXPECT_TRUE(sl.insert("G", "goat"));
+  EXPECT_TRUE(sl.insert("H", "horse"));
+
+  EXPECT_FALSE(sl.insert("A", "all"));
+  EXPECT_FALSE(sl.insert("B", "baby"));
+  EXPECT_FALSE(sl.insert("G", "giraffe"));
+
+  EXPECT_TRUE(sl.find("A") == "alligator");
+  EXPECT_TRUE(sl.find("B") == "bear");
+  EXPECT_TRUE(sl.find("C") == "cat");
+  EXPECT_TRUE(sl.find("D") == "dog");
+  EXPECT_TRUE(sl.find("E") == "elephant");
+  EXPECT_TRUE(sl.find("F") == "fox");
+  EXPECT_TRUE(sl.find("G") == "goat");
+  EXPECT_TRUE(sl.find("H") == "horse");
+}
+
+TEST(Additional, Test2) {
+  SkipList<std::string, std::string> sl;
+  EXPECT_TRUE(sl.insert("A", "alligator"));
+  EXPECT_TRUE(sl.insert("B", "bear"));
+  EXPECT_TRUE(sl.insert("C", "cat"));
+  EXPECT_TRUE(sl.insert("D", "dog"));
+  EXPECT_TRUE(sl.insert("E", "elephant"));
+  EXPECT_TRUE(sl.insert("F", "fox"));
+  EXPECT_TRUE(sl.insert("G", "goat"));
+  EXPECT_TRUE(sl.insert("H", "horse"));
+
+  EXPECT_TRUE(sl.isSmallestKey("A"));
+  EXPECT_TRUE(sl.isLargestKey("H"));
+
+  EXPECT_FALSE(sl.isSmallestKey("B"));
+  EXPECT_FALSE(sl.isLargestKey("G"));
+}
+
+TEST(Additional, Test3) {
+  SkipList<std::string, std::string> sl;
+  EXPECT_TRUE(sl.insert("A", "alligator"));
+  EXPECT_TRUE(sl.insert("B", "bear"));
+  EXPECT_TRUE(sl.insert("C", "cat"));
+  EXPECT_TRUE(sl.insert("D", "dog"));
+  EXPECT_TRUE(sl.insert("E", "elephant"));
+  EXPECT_TRUE(sl.insert("F", "fox"));
+  EXPECT_TRUE(sl.insert("G", "goat"));
+  EXPECT_TRUE(sl.insert("H", "horse"));
+
+  EXPECT_TRUE(sl.height("A") == 2);
+  EXPECT_TRUE(sl.height("B") == 1);
+  EXPECT_TRUE(sl.height("C") == 3);
+  EXPECT_TRUE(sl.height("D") == 1);
+  EXPECT_TRUE(sl.height("E") == 2);
+  EXPECT_TRUE(sl.height("F") == 1);
+  EXPECT_TRUE(sl.height("G") == 4);
+  EXPECT_TRUE(sl.height("H") == 1);
+}
+
+TEST(Additional, Test4) {
+  SkipList<std::string, std::string> sl;
+  EXPECT_TRUE(sl.insert("A", "alligator"));
+  EXPECT_TRUE(sl.insert("B", "bear"));
+  EXPECT_TRUE(sl.insert("C", "cat"));
+  EXPECT_TRUE(sl.insert("D", "dog"));
+  EXPECT_TRUE(sl.insert("E", "elephant"));
+  EXPECT_TRUE(sl.insert("F", "fox"));
+  EXPECT_TRUE(sl.insert("G", "goat"));
+  EXPECT_TRUE(sl.insert("H", "horse"));
+
+  EXPECT_TRUE(sl.numLayers() == 5);
+}
+
+TEST(Additional, Test5) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, (100 + i));
+  }
+
+  EXPECT_EQ(sl.find(0), 100);
+  EXPECT_EQ(sl.find(1), 101);
+  EXPECT_EQ(sl.find(2), 102);
+  EXPECT_EQ(sl.find(5), 105);
+  EXPECT_EQ(sl.find(9), 109);
+}
+
+TEST(Additional, Test6) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, (100 + i));
+  }
+
+  EXPECT_TRUE(sl.isSmallestKey(0));
+  EXPECT_TRUE(sl.isLargestKey(9));
+
+  EXPECT_FALSE(sl.isSmallestKey(1));
+  EXPECT_FALSE(sl.isLargestKey(8));
+}
+
+TEST(Additional, Test7) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    sl.insert(i, (100 + i));
+  }
+
+  EXPECT_TRUE(sl.height(0) == 1);
+  EXPECT_TRUE(sl.height(1) == 2);
+  EXPECT_TRUE(sl.height(2) == 1);
+  EXPECT_TRUE(sl.height(3) == 3);
+  EXPECT_TRUE(sl.height(5) == 2);
+  EXPECT_TRUE(sl.height(7) == 4);
+  EXPECT_TRUE(sl.height(9) == 2);
+}
+
+TEST(Additional, Test8) {
+  SkipList<std::string, unsigned> sl;
+
+  EXPECT_EQ(sl.size(), 0);
+  EXPECT_TRUE(sl.isEmpty());
+
+  EXPECT_TRUE(sl.insert("A", 100));
+  EXPECT_TRUE(sl.insert("B", 200));
+  EXPECT_TRUE(sl.insert("C", 300));
+  EXPECT_TRUE(sl.insert("D", 400));
+  EXPECT_TRUE(sl.insert("E", 500));
+  EXPECT_TRUE(sl.insert("F", 600));
+  EXPECT_TRUE(sl.insert("G", 700));
+  EXPECT_TRUE(sl.insert("AB", 800));
+  EXPECT_TRUE(sl.insert("AC", 900));
+  EXPECT_TRUE(sl.insert("AD", 1000));
+  EXPECT_TRUE(sl.insert("AE", 1100));
+
+  EXPECT_FALSE(sl.insert("A", 1200));
+  EXPECT_FALSE(sl.insert("B", 1300));
+  EXPECT_FALSE(sl.insert("C", 1400));
+  EXPECT_FALSE(sl.insert("AE", 1500));
+
+  EXPECT_TRUE(sl.find("A") == 100);
+  EXPECT_TRUE(sl.find("B") == 200);
+  EXPECT_TRUE(sl.find("C") == 300);
+  EXPECT_TRUE(sl.find("D") == 400);
+  EXPECT_TRUE(sl.find("E") == 500);
+  EXPECT_TRUE(sl.find("F") == 600);
+  EXPECT_TRUE(sl.find("G") == 700);
+  EXPECT_TRUE(sl.find("AB") == 800);
+  EXPECT_TRUE(sl.find("AC") == 900);
+  EXPECT_TRUE(sl.find("AD") == 1000);
+  EXPECT_TRUE(sl.find("AE") == 1100);
+
+  EXPECT_TRUE(sl.isSmallestKey("A"));
+  EXPECT_TRUE(sl.isLargestKey("G"));
+
+  EXPECT_FALSE(sl.isSmallestKey("AB"));
+  EXPECT_FALSE(sl.isLargestKey("F"));
+
+  EXPECT_EQ(sl.size(), 11);
+  EXPECT_FALSE(sl.isEmpty());
+}
+
+TEST(Additional, Test9) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 1000; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.size(), 1000);
+  EXPECT_FALSE(sl.isEmpty());
+
+  for (unsigned i = 0; i < 1000; i++) {
+    EXPECT_TRUE(sl.find(i) == (100 + i));
+  }
+
+  EXPECT_TRUE(sl.isSmallestKey(0));
+  EXPECT_TRUE(sl.isLargestKey(999));
+
+  EXPECT_FALSE(sl.isSmallestKey(1));
+  EXPECT_FALSE(sl.isLargestKey(998));
+}
+
+TEST(Additional, Test10) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 1; i < 11; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.print();
+
+  EXPECT_EQ(sl.numLayers(), 5);
+  EXPECT_EQ(sl.size(), 10);
+  EXPECT_FALSE(sl.isEmpty());
+
+  for (unsigned i = 1; i < 11; i++) {
+    EXPECT_TRUE(sl.find(i) == (100 + i));
+  }
+
+  EXPECT_THROW(sl.find(11), RuntimeException);
+  EXPECT_THROW(sl.find(12), RuntimeException);
+  EXPECT_THROW(sl.find(0), RuntimeException);
+
+  EXPECT_THROW(sl.height(11), RuntimeException);
+  EXPECT_THROW(sl.height(12), RuntimeException);
+  EXPECT_THROW(sl.height(0), RuntimeException);
+}
+
+TEST(Additional, Test11) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 1; i < 11; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.nextKey(1), 2);
+  EXPECT_EQ(sl.nextKey(2), 3);
+  EXPECT_EQ(sl.nextKey(3), 4);
+
+  EXPECT_EQ(sl.previousKey(10), 9);
+  EXPECT_EQ(sl.previousKey(9), 8);
+  EXPECT_EQ(sl.previousKey(8), 7);
+
+  EXPECT_THROW(sl.nextKey(10), RuntimeException);
+  EXPECT_THROW(sl.nextKey(11), RuntimeException);
+
+  EXPECT_THROW(sl.previousKey(1), RuntimeException);
+  EXPECT_THROW(sl.previousKey(0), RuntimeException);
+
+  EXPECT_THROW(sl.nextKey(0), RuntimeException);
+  EXPECT_THROW(sl.previousKey(11), RuntimeException);
+}
+
+TEST(Additional, Test12) {
+  SkipList<unsigned, unsigned> sl;
+  for (unsigned i = 0; i < 10; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.nextKey(0), 1);
+  EXPECT_EQ(sl.nextKey(1), 2);
+
+  EXPECT_EQ(sl.previousKey(9), 8);
+  EXPECT_EQ(sl.previousKey(8), 7);
+
+  EXPECT_THROW(sl.nextKey(10), RuntimeException);
+  EXPECT_THROW(sl.nextKey(11), RuntimeException);
+
+  EXPECT_THROW(sl.previousKey(0), RuntimeException);
+  EXPECT_THROW(sl.previousKey(-1), RuntimeException);
+
+  EXPECT_THROW(sl.nextKey(-1), RuntimeException);
+  EXPECT_THROW(sl.previousKey(10), RuntimeException);
+}
+} // namespace

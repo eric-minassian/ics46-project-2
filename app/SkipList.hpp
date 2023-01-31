@@ -1,5 +1,3 @@
-
-
 #ifndef ___SKIP_LIST_HPP
 #define ___SKIP_LIST_HPP
 
@@ -296,7 +294,7 @@ unsigned SkipList<Key, Value>::height(const Key &k) const {
     }
   }
 
-  if (temp->key != k) {
+  if (temp->key != k || temp->n_inf) {
     throw RuntimeException("Key not found");
   }
 
@@ -319,7 +317,7 @@ Key SkipList<Key, Value>::nextKey(const Key &k) const {
     }
   }
 
-  if (temp->key != k || temp->next->p_inf) {
+  if (temp->key != k || temp->n_inf || temp->next->p_inf) {
     throw RuntimeException("Key not found");
   }
 
@@ -336,7 +334,7 @@ Key SkipList<Key, Value>::previousKey(const Key &k) const {
     }
   }
 
-  if (temp->key != k || temp->previous->n_inf) {
+  if (temp->key != k || temp->n_inf || temp->previous->n_inf) {
     throw RuntimeException("Key not found");
   }
 
@@ -353,7 +351,7 @@ const Value &SkipList<Key, Value>::find(Key k) const {
     }
   }
 
-  if (temp->key == k) {
+  if (temp->key == k && !temp->n_inf) {
     return temp->value;
   } else {
     throw RuntimeException("Key not found");
@@ -370,7 +368,7 @@ Value &SkipList<Key, Value>::find(const Key &k) {
     }
   }
 
-  if (temp->key == k) {
+  if (temp->key == k && !temp->n_inf) {
     return temp->value;
   } else {
     throw RuntimeException("Key not found");
@@ -400,7 +398,6 @@ bool SkipList<Key, Value>::insert(const Key &k, const Value &v) {
   temp->next = new_node;
   num_keys++;
 
-  // @TODO: Implement check for max_flips
   unsigned max_flips = 0;
   if (num_keys <= 16) {
     max_flips = 12;
