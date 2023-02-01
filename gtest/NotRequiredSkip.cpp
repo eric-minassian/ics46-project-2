@@ -293,8 +293,6 @@ TEST(Additional, Test10) {
     EXPECT_TRUE(sl.insert(i, (100 + i)));
   }
 
-  sl.print();
-
   EXPECT_EQ(sl.numLayers(), 5);
   EXPECT_EQ(sl.size(), 10);
   EXPECT_FALSE(sl.isEmpty());
@@ -357,4 +355,282 @@ TEST(Additional, Test12) {
   EXPECT_THROW(sl.nextKey(-1), RuntimeException);
   EXPECT_THROW(sl.previousKey(10), RuntimeException);
 }
+
+TEST(Additional, Test13) {
+  SkipList<unsigned, unsigned> sl;
+
+  EXPECT_EQ(sl.size(), 0);
+  EXPECT_TRUE(sl.isEmpty());
+
+  for (unsigned i = 0; i < 10; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+    EXPECT_EQ(sl.size(), i + 1);
+    EXPECT_FALSE(sl.isEmpty());
+  }
+}
+
+TEST(Additional, Test14) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 10; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.numLayers(), 5);
+
+  for (unsigned i = 20; i < 30; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.numLayers(), 5);
+}
+
+TEST(Additional, Test15) {
+  SkipList<unsigned, unsigned> sl;
+
+  EXPECT_EQ(sl.numLayers(), 2);
+
+  for (unsigned i = 0; i < 100; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.numLayers(), 8);
+}
+
+TEST(Additional, Test16) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_THROW(sl.height(0), RuntimeException);
+  EXPECT_THROW(sl.height(101), RuntimeException);
+
+  for (unsigned i = 101; i < 200; i++) {
+    EXPECT_THROW(sl.height(i), RuntimeException);
+  }
+
+  EXPECT_EQ(sl.height(63), 7);
+  EXPECT_EQ(sl.height(95), 6);
+  EXPECT_EQ(sl.height(31), 6);
+  EXPECT_EQ(sl.height(15), 5);
+  EXPECT_EQ(sl.height(47), 5);
+
+  EXPECT_EQ(sl.height(1), 2);
+  EXPECT_EQ(sl.height(2), 1);
+  EXPECT_EQ(sl.height(3), 3);
+
+  EXPECT_EQ(sl.height(97), 2);
+  EXPECT_EQ(sl.height(98), 1);
+  EXPECT_EQ(sl.height(99), 3);
+}
+
+TEST(Additional, Test17) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_THROW(sl.nextKey(0), RuntimeException);
+  EXPECT_THROW(sl.nextKey(101), RuntimeException);
+
+  sl.insert(0, 100);
+
+  for (unsigned i = 0; i < 100; i++) {
+    EXPECT_EQ(sl.nextKey(i), i + 1);
+  }
+
+  EXPECT_THROW(sl.nextKey(100), RuntimeException);
+}
+
+TEST(Additional, Test18) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_THROW(sl.previousKey(0), RuntimeException);
+  EXPECT_THROW(sl.previousKey(101), RuntimeException);
+
+  sl.insert(0, 100);
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_EQ(sl.previousKey(i), i - 1);
+  }
+
+  EXPECT_THROW(sl.previousKey(0), RuntimeException);
+}
+
+TEST(Additional, Test19) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_THROW(sl.find(0), RuntimeException);
+  EXPECT_THROW(sl.find(101), RuntimeException);
+
+  sl.insert(0, 100);
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_EQ(sl.find(i), 100 + i);
+  }
+
+  EXPECT_THROW(sl.find(101), RuntimeException);
+
+  sl.insert(101, 201);
+
+  for (unsigned i = 0; i < 102; i++) {
+    EXPECT_EQ(sl.find(i), 100 + i);
+  }
+}
+
+TEST(Additional, Test20) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_EQ(sl.find(i), 100 + i);
+    unsigned &value = sl.find(i);
+    value = 200 + i;
+  }
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_EQ(sl.find(i), 200 + i);
+  }
+}
+
+TEST(Additional, Test21) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  const SkipList<unsigned, unsigned> &csl = sl;
+
+  for (unsigned i = 0; i < 101; i++) {
+    EXPECT_EQ(csl.find(i), 100 + i);
+  }
+}
+
+TEST(Additional, Test22) {
+  SkipList<unsigned, unsigned> sl;
+
+  EXPECT_THROW(sl.isSmallestKey(0), RuntimeException);
+  EXPECT_THROW(sl.isSmallestKey(1), RuntimeException);
+
+  EXPECT_THROW(sl.isLargestKey(0), RuntimeException);
+  EXPECT_THROW(sl.isLargestKey(1), RuntimeException);
+
+  for (unsigned i = 1; i < 101; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_THROW(sl.isSmallestKey(0), RuntimeException);
+  EXPECT_THROW(sl.isSmallestKey(101), RuntimeException);
+
+  EXPECT_THROW(sl.isLargestKey(0), RuntimeException);
+  EXPECT_THROW(sl.isLargestKey(101), RuntimeException);
+
+  EXPECT_TRUE(sl.isSmallestKey(1));
+  EXPECT_TRUE(sl.isLargestKey(100));
+
+  sl.insert(0, 100);
+  sl.insert(101, 201);
+
+  EXPECT_TRUE(sl.isSmallestKey(0));
+  EXPECT_TRUE(sl.isLargestKey(101));
+
+  EXPECT_FALSE(sl.isSmallestKey(1));
+  EXPECT_FALSE(sl.isLargestKey(100));
+}
+
+TEST(Additional, Test23) {
+  SkipList<unsigned, unsigned> sl;
+  std::vector<unsigned> keys;
+
+  for (unsigned i = 100; i < 200; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  for (unsigned i = 0; i < 100; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  for (unsigned i = 0; i < 200; i++) {
+    keys.push_back(i);
+  }
+
+  EXPECT_EQ(sl.allKeysInOrder(), keys);
+}
+
+// Test 23 but keys of strings instead of unsigned integers
+TEST(Additional, Test24) {
+  SkipList<std::string, unsigned> sl;
+  std::vector<std::string> keys;
+
+  for (unsigned i = 100; i < 200; i++) {
+    EXPECT_TRUE(sl.insert(std::to_string(i), (100 + i)));
+  }
+
+  for (unsigned i = 0; i < 100; i++) {
+    EXPECT_TRUE(sl.insert(std::to_string(i), (100 + i)));
+  }
+
+  for (unsigned i = 0; i < 200; i++) {
+    keys.push_back(std::to_string(i));
+  }
+
+  for (unsigned i = 0; i < 200; i++) {
+    EXPECT_EQ(sl.find(std::to_string(i)), 100 + i);
+  }
+}
+
+TEST(Additional, Test25) {
+  SkipList<std::string, std::string> sl;
+  std::vector<std::string> keys;
+
+  EXPECT_TRUE(sl.insert("a", "alpha"));
+  EXPECT_TRUE(sl.insert("b", "beta"));
+  EXPECT_TRUE(sl.insert("bb", "beta"));
+  EXPECT_TRUE(sl.insert("e", "epsilon"));
+  EXPECT_TRUE(sl.insert("k", "lambda"));
+  EXPECT_TRUE(sl.insert("j", "kappa"));
+  EXPECT_TRUE(sl.insert("i", "iota"));
+  EXPECT_TRUE(sl.insert("f", "zeta"));
+  EXPECT_TRUE(sl.insert("g", "eta"));
+  EXPECT_TRUE(sl.insert("h", "theta"));
+  EXPECT_TRUE(sl.insert("c", "gamma"));
+  EXPECT_TRUE(sl.insert("d", "delta"));
+  EXPECT_TRUE(sl.insert("cc", "gamma"));
+  EXPECT_TRUE(sl.insert("aa", "alpha"));
+  EXPECT_TRUE(sl.insert("dd", "delta"));
+
+  keys.push_back("a");
+  keys.push_back("aa");
+  keys.push_back("b");
+  keys.push_back("bb");
+  keys.push_back("c");
+  keys.push_back("cc");
+  keys.push_back("d");
+  keys.push_back("dd");
+  keys.push_back("e");
+  keys.push_back("f");
+  keys.push_back("g");
+  keys.push_back("h");
+  keys.push_back("i");
+  keys.push_back("j");
+  keys.push_back("k");
+
+  EXPECT_EQ(sl.allKeysInOrder(), keys);
+}
+
 } // namespace

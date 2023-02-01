@@ -463,11 +463,20 @@ bool SkipList<Key, Value>::isSmallestKey(const Key &k) const {
   SkipNode<Key, Value> *temp = head;
   while (temp->bottom) {
     temp = temp->bottom;
+    while (!temp->next->p_inf && k >= temp->next->key) {
+      temp = temp->next;
+    }
   }
-  if (temp->next->key == k) {
-    return true;
+
+  if (temp->key == k && !temp->n_inf) {
+    if (temp->previous->n_inf) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    throw RuntimeException("Key not found");
   }
-  return false;
 }
 
 template <typename Key, typename Value>
@@ -475,14 +484,20 @@ bool SkipList<Key, Value>::isLargestKey(const Key &k) const {
   SkipNode<Key, Value> *temp = head;
   while (temp->bottom) {
     temp = temp->bottom;
+    while (!temp->next->p_inf && k >= temp->next->key) {
+      temp = temp->next;
+    }
   }
-  while (temp->next->p_inf == false) {
-    temp = temp->next;
+
+  if (temp->key == k && !temp->n_inf) {
+    if (temp->next->p_inf) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    throw RuntimeException("Key not found");
   }
-  if (temp->key == k) {
-    return true;
-  }
-  return false;
 }
 
 #endif
