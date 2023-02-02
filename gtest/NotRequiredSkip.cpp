@@ -1,5 +1,6 @@
 #include "SkipList.hpp"
 #include "gtest/gtest.h"
+#include <cstdint>
 #include <vector>
 
 /*
@@ -786,6 +787,22 @@ TEST(Additional, Test36) {
   EXPECT_THROW(sl.find("l"), RuntimeException);
   EXPECT_THROW(sl.find("m"), RuntimeException);
   EXPECT_THROW(sl.find("n"), RuntimeException);
+}
+
+TEST(Additional, Test37) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 1000000; i++) {
+    EXPECT_TRUE(sl.insert(i, i));
+  }
+
+  for (unsigned i = 0; i < 1000000; i++) {
+    EXPECT_EQ(sl.find(i), i);
+  }
+
+  EXPECT_LE(sl.numLayers(), 61);
+
+  EXPECT_THROW(sl.find(1000000), RuntimeException);
 }
 
 } // namespace

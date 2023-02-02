@@ -214,23 +214,7 @@ public:
   bool isLargestKey(const Key &k) const;
 
   // I am not requiring you to implement remove.
-  void print() const;
 };
-
-template <typename Key, typename Value>
-void SkipList<Key, Value>::print() const {
-  SkipNode<Key, Value> *temp = head;
-  SkipNode<Key, Value> *temp_head = head;
-  while (temp_head != nullptr) {
-    temp = temp_head;
-    while (temp != nullptr) {
-      std::cout << temp->key << " ";
-      temp = temp->next;
-    }
-    std::cout << std::endl;
-    temp_head = temp_head->bottom;
-  }
-}
 
 template <typename Key, typename Value> SkipList<Key, Value>::SkipList() {
   head = new SkipNode<Key, Value>();
