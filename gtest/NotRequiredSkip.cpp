@@ -633,4 +633,159 @@ TEST(Additional, Test25) {
   EXPECT_EQ(sl.allKeysInOrder(), keys);
 }
 
+TEST(Additional, Test26) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 1; i < 16; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  EXPECT_EQ(sl.numLayers(), 6);
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 13);
+  EXPECT_EQ(sl.size(), 16);
+}
+
+TEST(Additional, Test27) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 16; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 16);
+}
+
+TEST(Additional, Test28) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 100; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 22);
+}
+
+TEST(Additional, Test29) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 1000; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 31);
+}
+
+TEST(Additional, Test30) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 17; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 16);
+}
+
+TEST(Additional, Test31) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 18; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 16);
+}
+
+TEST(Additional, Test32) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 31; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 16);
+}
+
+TEST(Additional, Test33) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 32; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 19);
+}
+
+TEST(Additional, Test34) {
+  SkipList<unsigned, unsigned> sl;
+
+  for (unsigned i = 0; i < 12; i++) {
+    EXPECT_TRUE(sl.insert(i, (100 + i)));
+  }
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 13);
+}
+
+TEST(Additional, Test35) {
+  SkipList<unsigned, unsigned> sl;
+
+  sl.insert(255, 355);
+
+  EXPECT_EQ(sl.numLayers(), 13);
+}
+
+TEST(Additional, Test36) {
+  SkipList<std::string, std::string> sl;
+
+  EXPECT_TRUE(sl.insert("a", "alpha"));
+  EXPECT_TRUE(sl.insert("b", "beta"));
+  EXPECT_TRUE(sl.insert("bb", "beta"));
+  EXPECT_TRUE(sl.insert("e", "epsilon"));
+  EXPECT_TRUE(sl.insert("k", "lambda"));
+  EXPECT_TRUE(sl.insert("j", "kappa"));
+  EXPECT_TRUE(sl.insert("i", "iota"));
+  EXPECT_TRUE(sl.insert("f", "zeta"));
+  EXPECT_TRUE(sl.insert("g", "eta"));
+  EXPECT_TRUE(sl.insert("h", "theta"));
+  EXPECT_TRUE(sl.insert("c", "gamma"));
+  EXPECT_TRUE(sl.insert("d", "delta"));
+  EXPECT_TRUE(sl.insert("cc", "gamma"));
+  EXPECT_TRUE(sl.insert("aa", "alpha"));
+  EXPECT_TRUE(sl.insert("dd", "delta"));
+
+  EXPECT_FALSE(sl.insert("a", "alpha"));
+  EXPECT_FALSE(sl.insert("b", "beta"));
+  EXPECT_FALSE(sl.insert("bb", "beta"));
+  EXPECT_FALSE(sl.insert("e", "epsilon"));
+  EXPECT_FALSE(sl.insert("k", "lambda"));
+
+  EXPECT_EQ(sl.find("a"), "alpha");
+  EXPECT_EQ(sl.find("b"), "beta");
+  EXPECT_EQ(sl.find("bb"), "beta");
+  EXPECT_EQ(sl.find("e"), "epsilon");
+  EXPECT_EQ(sl.find("k"), "lambda");
+
+  EXPECT_THROW(sl.find("l"), RuntimeException);
+  EXPECT_THROW(sl.find("m"), RuntimeException);
+  EXPECT_THROW(sl.find("n"), RuntimeException);
+}
+
 } // namespace
